@@ -47,6 +47,14 @@ export default async function CLVPage() {
     { label: '10%+', data: unique.filter((r: any) => r.clv * 100 >= 10) },
   ]
 
+  const today = new Date().toISOString().split('T')[0]
+  const { data: clvBriefingData } = await supabase
+    .from('briefings')
+    .select('content')
+    .eq('id', `clv_${today}`)
+    .single()
+  const clvBriefing = clvBriefingData?.content || null
+
   return (
     <div className="min-h-screen bg-zinc-950 text-white font-mono">
       <Header user={user} />
@@ -105,6 +113,14 @@ export default async function CLVPage() {
             })}
           </div>
         </div>
+        {clvBriefing && (
+          <div>
+            <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-4">CLV Analysis</h2>
+            <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 text-sm text-zinc-300 leading-relaxed">
+              <p className="whitespace-pre-wrap">{clvBriefing}</p>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   )
