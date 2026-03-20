@@ -1,28 +1,20 @@
 'use client'
 import { useState } from 'react'
+import { signIn, signUp } from '../actions/auth'
 import { supabase } from '../lib/supabase'
-import { useRouter } from 'next/navigation'
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [isSignUp, setIsSignUp] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
 
-  const handleEmailAuth = async () => {
+  const handleSubmit = async (formData: FormData) => {
     setLoading(true)
     setError('')
-    const { error } = isSignUp
-      ? await supabase.auth.signUp({ email, password })
-      : await supabase.auth.signInWithPassword({ email, password })
-    if (error) {
-      setError(error.message)
+    const result = isSignUp ? await signUp(formData) : await signIn(formData)
+    if (result?.error) {
+      setError(result.error)
       setLoading(false)
-    } else {
-      router.refresh()
-      router.push('/')
     }
   }
 
@@ -42,10 +34,8 @@ export default function LoginPage() {
         </div>
 
         <div className="space-y-4">
-          <button
-            onClick={handleGoogle}
-            className="w-full bg-white text-black rounded-lg py-3 text-sm font-medium hover:bg-zinc-100 transition"
-          >
+          <button type="button" onClick={handleGoogle}
+            className="w-full bg-white text-black rounded-lg py-3 text-sm font-medium hover:bg-zinc-100 transition">
             Continue with Google
           </button>
 
@@ -55,35 +45,23 @@ export default function LoginPage() {
             <div className="flex-1 h-px bg-zinc-800"/>
           </div>
 
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-green-400"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleEmailAuth()}
-            className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-green-400"
-          />
+          <form action={handleSubmit} className="space-y-4">
+            <input name="email" type="email" placeholder="Email" required
+              className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-green-400"/>
+            <input name="password" type="password" placeholder="Password" required
+              className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-green-400"/>
 
-          {error && <p className="text-red-400 text-xs">{error}</p>}
+            {error && <p className="text-red-400 text-xs">{error}</p>}
 
-          <button
-            onClick={handleEmailAuth}
-            disabled={loading}
-            className="w-full bg-green-400 text-black rounded-lg py-3 text-sm font-bold hover:bg-green-300 transition disabled:opacity-50"
-          >
-            {loading ? 'Loading...' : isSignUp ? 'Create Account' : 'Sign In'}
-          </button>
+            <button type="submit" disabled={loading}
+              className="w-full bg-green-400 text-black rounded-lg py-3 text-sm font-bold hover:bg-green-300 transition disabled:opacity-50">
+              {loading ? 'Loading...' : isSignUp ? 'Create Account' : 'Sign In'}
+            </button>
+          </form>
 
           <p className="text-zinc-500 text-xs text-center">
             {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
-            <button onClick={() => setIsSignUp(!isSignUp)} className="text-green-400 hover:underline">
+            <button type="button" onClick={() => setIsSignUp(!isSignUp)} className="text-green-400 hover:underline">
               {isSignUp ? 'Sign in' : 'Sign up'}
             </button>
           </p>
