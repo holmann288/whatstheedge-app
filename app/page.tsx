@@ -3,7 +3,7 @@ import { supabase } from './lib/supabase'
 export default async function Home() {
   const today = new Date().toISOString().split('T')[0]
 
-  const [edgesRes, clvRes, briefingRes] = await Promise.all([
+  const [edgesRes, clvRes, briefingRes, clvBriefingRes] = await Promise.all([
     supabase
       .from('edges')
       .select('*')
@@ -19,15 +19,18 @@ export default async function Home() {
       .from('briefings')
       .select('content, created_at')
       .eq('id', `morning_${today}`)
+      .single(),
+    supabase
+      .from('briefings')
+      .select('content, created_at')
+      .eq('id', `clv_${today}`)
       .single()
   ])
 
   const signals = edgesRes.data || []
   const clvData = clvRes.data || []
   const briefing = briefingRes.data?.content || null
-  const briefingTime = briefingRes.data?.created_at
-    ? new Date(briefingRes.data.created_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
-    : null
+  const clvBriefing = clvBriefingRes.data?.content || null
 
   const avgClv = clvData.length > 0
     ? (clvData.reduce((sum, r) => sum + r.clv, 0) / clvData.length * 100).toFixed(2)
@@ -36,10 +39,7 @@ export default async function Home() {
     ? ((clvData.filter(r => r.clv > 0).length / clvData.length) * 100).toFixed(1)
     : '0.0'
 
-  const formatEdge = (s: any) => {
-    const diff = Math.abs(s.fair_value - s.market_value)
-    return `${diff.toFixed(1)} pts`
-  }
+  const formatEdge = (s: any) => `${Math.abs(s.fair_value - s.market_value).toFixed(1)} pts`
 
   const formatSignal = (s: any) => {
     if (s.bet_type === 'spread') return `Spread ${s.fair_value > 0 ? '+' : ''}${s.fair_value}`
@@ -110,17 +110,23 @@ export default async function Home() {
 
         <div>
           <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-4">Morning Briefing</h2>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 space-y-3 text-sm text-zinc-300 leading-relaxed">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 text-sm text-zinc-300 leading-relaxed">
             {briefing ? (
-              <>
-                <p className="whitespace-pre-wrap">{briefing}</p>
-                {briefingTime && <p className="text-zinc-500 text-xs">Generated {briefingTime}</p>}
-              </>
+              <p className="whitespace-pre-wrap">{briefing}</p>
             ) : (
               <p className="text-zinc-500">No briefing yet today. Check back after 8:00 AM.</p>
             )}
           </div>
         </div>
+
+        {clvBriefing && (
+          <div>
+            <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-4">CLV Analysis</h2>
+            <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 text-sm text-zinc-300 leading-relaxed">
+              <p className="whitespace-pre-wrap">{clvBriefing}</p>
+            </div>
+          </div>
+        )}
 
         <div className="border border-dashed border-zinc-800 rounded-lg p-6 text-center text-zinc-600 text-sm">
           MLB signals launching March 26 · NFL & NCAAF coming this fall · Mobile app coming soon
