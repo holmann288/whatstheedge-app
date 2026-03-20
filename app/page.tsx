@@ -1,12 +1,14 @@
 import { supabase } from './lib/supabase'
 
 export default async function Home() {
+  const today = new Date().toISOString().split('T')[0]
+
   const { data: edges } = await supabase
     .from('edges')
     .select('*')
-    .eq('signal', 'BET')
-    .order('created_at', { ascending: false })
-    .limit(10)
+    .gte('edge_pct', 5.5)
+    .eq('game_date', today)
+    .order('edge_pct', { ascending: false })
 
   const signals = edges || []
 
@@ -23,7 +25,7 @@ export default async function Home() {
             <span className="w-2 h-2 rounded-full bg-green-400 inline-block animate-pulse"></span>
             Live
           </span>
-          <span>Mar 19, 2026</span>
+          <span>{today}</span>
         </div>
       </header>
 
@@ -55,15 +57,13 @@ export default async function Home() {
                 <div key={s.id} className="bg-zinc-900 border border-zinc-800 rounded-lg p-5 flex items-center justify-between">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded">{s.sport || 'NBA'}</span>
-                      <span className="text-sm text-zinc-300">{s.game_id}</span>
+                      <span className="text-xs text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded">{s.sport}</span>
+                      <span className="text-sm text-zinc-300">{s.away_team} @ {s.home_team}</span>
                     </div>
-                    <div className="text-white font-bold text-lg">{s.bet_type || s.side}</div>
+                    <div className="text-white font-bold text-lg">{s.bet_type} — {s.direction}</div>
                   </div>
                   <div className="text-right space-y-1">
-                    <div className="text-green-400 font-bold text-lg">
-                      {s.edge_pct ? `+${(s.edge_pct * 100).toFixed(1)}%` : 'N/A'}
-                    </div>
+                    <div className="text-green-400 font-bold text-lg">+{s.edge_pct}%</div>
                     <div className="text-xs text-zinc-500">Edge</div>
                   </div>
                 </div>
