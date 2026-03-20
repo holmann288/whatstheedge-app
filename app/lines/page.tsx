@@ -12,13 +12,13 @@ const supabase = createClient(
 
 const SPORTS = ['All', 'NBA', 'NCAAB', 'MLB']
 const BET_TYPES_ALL = ['Spreads', 'O/U', 'Moneyline']
-  const BET_TYPES = sport === 'NCAAB' ? ['Spreads', 'O/U'] : BET_TYPES_ALL
 
 export default function LinesPage() {
   const [rows, setRows] = useState<any[]>([])
   const [sport, setSport] = useState('All')
   const [betType, setBetType] = useState('Spreads')
   const [user, setUser] = useState<any>(null)
+  const BET_TYPES = sport === 'NCAAB' ? ['Spreads', 'O/U'] : BET_TYPES_ALL
   const router = useRouter()
 
   useEffect(() => {
