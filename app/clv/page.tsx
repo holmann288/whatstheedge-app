@@ -85,12 +85,33 @@ export default async function CLVPage() {
           <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-4">By Sport</h2>
           <div className="grid grid-cols-2 gap-4">
             {[{ label: 'NBA', m: nba }, { label: 'NCAAB', m: ncaab }].map(({ label, m }) => (
-              <div key={label} className="bg-zinc-900 border border-zinc-800 rounded-lg p-4 space-y-2">
+              <div key={label} className="bg-zinc-900 border border-zinc-800 rounded-lg p-4 space-y-3">
                 <div className="text-zinc-400 text-sm font-bold">{label}</div>
                 {m ? (
-                  <>
-                    <div className="text-xs text-zinc-500">n={m.n} · avg={m.avg}% · median={m.median}% · pos={m.pos}%</div>
-                  </>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <div className="text-zinc-500 text-xs uppercase tracking-widest">Unique Bets</div>
+                      <div className="text-white font-bold text-lg">{m.n}</div>
+                    </div>
+                    <div>
+                      <div className="text-zinc-500 text-xs uppercase tracking-widest">Avg CLV</div>
+                      <div className={`font-bold text-lg ${parseFloat(m.avg) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        {parseFloat(m.avg) >= 0 ? '+' : ''}{m.avg}%
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-zinc-500 text-xs uppercase tracking-widest">Median CLV</div>
+                      <div className={`font-bold ${parseFloat(m.median) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        {parseFloat(m.median) >= 0 ? '+' : ''}{m.median}%
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-zinc-500 text-xs uppercase tracking-widest">Pct Positive</div>
+                      <div className={`font-bold ${parseFloat(m.pos) >= 55 ? 'text-green-400' : 'text-yellow-400'}`}>
+                        {m.pos}%
+                      </div>
+                    </div>
+                  </div>
                 ) : <div className="text-zinc-600 text-xs">No data</div>}
               </div>
             ))}
