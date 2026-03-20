@@ -19,13 +19,14 @@ export default function LinesPage() {
   const [sport, setSport] = useState('All')
   const [betType, setBetType] = useState('Spreads')
   const [user, setUser] = useState<any>(null)
+  const [authChecked, setAuthChecked] = useState(false)
   const BET_TYPES = sport === 'NCAAB' ? ['Spreads', 'O/U'] : BET_TYPES_ALL
   const router = useRouter()
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (!data.user) router.push('/login')
-      else setUser(data.user)
+      else { setUser(data.user); setAuthChecked(true) }
     })
 
     const today = new Date().toISOString().split('T')[0]
@@ -96,6 +97,8 @@ export default function LinesPage() {
     if (r.bet_type === 'moneyline') return d >= 10 ? 'text-green-400' : d >= 5 ? 'text-yellow-400' : 'text-zinc-400'
     return d >= 5.5 ? 'text-green-400' : d >= 3 ? 'text-yellow-400' : 'text-zinc-400'
   }
+
+  if (!authChecked) return <div className="min-h-screen bg-zinc-950" />
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white font-mono">
