@@ -162,33 +162,8 @@ export default function LinesPage() {
         ) : (
           <div className="space-y-2">
             {filtered.map((r: any) => (
-              <div key={r.id} className="bg-zinc-900 border border-zinc-800 rounded-lg px-5 py-4 flex items-center justify-between">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-xs text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded">{r.sport}</span>
-                    {r.edge_pct >= 5.5 && <span className="text-xs bg-green-400 text-black px-2 py-0.5 rounded font-bold">BET</span>}
-                    <span className="text-sm text-zinc-300">{r.away_team} @ {r.home_team}</span>
-                  </div>
-                  <div className="text-white font-bold">{formatFair(r)}</div>
-                  <div className="text-xs text-zinc-500">Market: {r.market_value} · {r.game_date}</div>
-                  {plainEnglish(r) && (
-                    <div className="text-xs text-zinc-400 mt-1 max-w-sm">{plainEnglish(r)}</div>
-                  )}
-                </div>
-                <div className="flex gap-6 text-right shrink-0">
-                  <div className="space-y-1">
-                    <div className="text-zinc-500 text-xs uppercase tracking-widest">Vegas Says</div>
-                    <div className="text-white font-bold text-lg">{r.bet_type === 'spread' ? (r.market_value > 0 ? '+' : '') + r.market_value : r.market_value}</div>
-                  </div>
-                  <div className="space-y-1">
-                    <div className="text-zinc-500 text-xs uppercase tracking-widest">Our Model</div>
-                    <div className={`font-bold text-lg ${edgeColor(r)}`}>
-                      {r.bet_type === 'spread' ? (r.fair_value > 0 ? '+' : '') + r.fair_value : r.fair_value}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
+                <SignalCard key={r.id} s={r} />
+              ))}
           </div>
         )}
       </main>
