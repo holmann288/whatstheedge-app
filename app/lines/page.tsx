@@ -1,55 +1,58 @@
-import { createClient } from '../lib/supabase-server'
-import { redirect } from 'next/navigation'
+'use client'
+import { useEffect, useState } from 'react'
+import { createClient } from '@supabase/supabase-js'
 import Header from '../components/Header'
 import Nav from '../components/Nav'
+import { useRouter } from 'next/navigation'
 
-export default async function LinesPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 
-  const today = new Date().toISOString().split('T')[0]
+const SPORTS = ['All', 'NBA', 'NCAAB', 'MLB']
+const BET_TYPES = ['Spreads', 'O/U', 'Moneyline']
 
-  const { data: rows } = await supabase
-    .from('edges')
-    .select('*')
-    .gte('game_date', today)
-    .order('edge_pct', { ascending: false })
+export default function LinesPage() {
+  const [rows, setRows] = useState<any[]>([])
+  const [sport, setSport] = useState('All')
+  const [betType, setBetType] = useState('Spreads')
+  const [user, setUser] = useState<any>(null)
+  const router = useRouter()
 
-  const all = rows || []
-  const spreads = all.filter((r: any) => r.bet_type === 'spread')
-  const totals = all.filter((r: any) => r.bet_type === 'total')
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (!data.user) router.push('/login')
+      else setUser(data.user)
+    })
 
-  const SportFilter = ({ label, count }: { label: string, count: number }) => (
-    <span className="text-xs text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded">{label} ({count})</span>
-  )
+    const today = new Date().toISOString().split('T')[0]
+    supabase
+      .from('edges')
+      .select('*')
+      .gte('game_date', today)
+      .order('edge_pct', { ascending: false })
+      .then(({ data }) => setRows(data || []))
+  }, [])
 
-  const EdgeRow = ({ r }: { r: any }) => {
-    const diff = Math.abs(r.fair_value - r.market_value)
-    const isSpread = r.bet_type === 'spread'
-    return (
-      <div className="bg-zinc-900 border border-zinc-800 rounded-lg px-5 py-4 flex items-center justify-between">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded">{r.sport}</span>
-            <span className="text-xs text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded">{r.bet_type}</span>
-            <span className="text-sm text-zinc-300">{r.away_team} @ {r.home_team}</span>
-          </div>
-          <div className="text-white font-bold">
-            {isSpread
-              ? `Fair Spread: ${r.fair_value > 0 ? '+' : ''}${r.fair_value}`
-              : `Fair Total: ${r.fair_value}`}
-          </div>
-          <div className="text-xs text-zinc-500">Market: {r.market_value} · {r.game_date}</div>
-        </div>
-        <div className="text-right space-y-1">
-          <div className={`font-bold text-lg ${diff >= 5.5 ? 'text-green-400' : diff >= 3 ? 'text-yellow-400' : 'text-zinc-400'}`}>
-            {diff.toFixed(1)} pts
-          </div>
-          <div className="text-xs text-zinc-500">vs market</div>
-        </div>
-      </div>
-    )
+  const typeMap: Record<string, string> = { 'Spreads': 'spread', 'O/U': 'total', 'Moneyline': 'moneyline' }
+
+  const filtered = rows
+    .filter(r => sport === 'All' || r.sport === sport)
+    .filter(r => r.bet_type === typeMap[betType])
+
+  const diff = (r: any) => Math.abs(r.fair_value - r.market_value)
+
+  const formatFair = (r: any) => {
+    if (r.bet_type === 'spread') return `Fair: ${r.fair_value > 0 ? '+' : ''}${r.fair_value}`
+    if (r.bet_type === 'total') return `Fair: ${r.fair_value}`
+    return `Fair: ${r.fair_value}`
+  }
+
+  const edgeColor = (d: number) => {
+    if (d >= 5.5) return 'text-green-400'
+    if (d >= 3) return 'text-yellow-400'
+    return 'text-zinc-400'
   }
 
   return (
@@ -57,43 +60,78 @@ export default async function LinesPage() {
       <Header user={user} />
       <Nav active="/lines" />
 
-      <main className="max-w-4xl mx-auto px-6 py-10 space-y-10">
+      <main className="max-w-4xl mx-auto px-6 py-10 space-y-6">
+
+        {/* Sport filter */}
+        <div className="flex gap-2 flex-wrap">
+          {SPORTS.map(s => (
+            <button key={s} onClick={() => setSport(s)}
+              className={`px-4 py-1.5 rounded text-xs font-bold uppercase tracking-widest transition
+                ${sport === s ? 'bg-green-400 text-black' : 'bg-zinc-800 text-zinc-400 hover:text-white'}`}>
+              {s}
+            </button>
+          ))}
+        </div>
+
+        {/* Bet type sub-tabs */}
+        <div className="flex border-b border-zinc-800">
+          {BET_TYPES.map(t => (
+            <button key={t} onClick={() => setBetType(t)}
+              className={`px-5 py-3 text-xs uppercase tracking-widest transition
+                ${betType === t
+                  ? 'text-green-400 border-b-2 border-green-400'
+                  : 'text-zinc-500 hover:text-white'}`}>
+              {t}
+            </button>
+          ))}
+        </div>
+
+        {/* Stats row */}
         <div className="grid grid-cols-3 gap-4">
           <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
-            <div className="text-zinc-500 text-xs uppercase tracking-widest mb-1">Total Lines</div>
-            <div className="text-2xl font-bold text-green-400">{all.length}</div>
+            <div className="text-zinc-500 text-xs uppercase tracking-widest mb-1">Showing</div>
+            <div className="text-2xl font-bold text-green-400">{filtered.length}</div>
           </div>
           <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
-            <div className="text-zinc-500 text-xs uppercase tracking-widest mb-1">Spreads</div>
-            <div className="text-2xl font-bold text-green-400">{spreads.length}</div>
+            <div className="text-zinc-500 text-xs uppercase tracking-widest mb-1">Avg Edge</div>
+            <div className="text-2xl font-bold text-green-400">
+              {filtered.length ? (filtered.reduce((s, r) => s + diff(r), 0) / filtered.length).toFixed(1) : '—'} pts
+            </div>
           </div>
           <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
-            <div className="text-zinc-500 text-xs uppercase tracking-widest mb-1">Totals</div>
-            <div className="text-2xl font-bold text-green-400">{totals.length}</div>
+            <div className="text-zinc-500 text-xs uppercase tracking-widest mb-1">BET Signals</div>
+            <div className="text-2xl font-bold text-green-400">
+              {filtered.filter(r => r.edge_pct >= 5.5).length}
+            </div>
           </div>
         </div>
 
-        <div>
-          <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-4">Spreads</h2>
-          {spreads.length === 0 ? (
-            <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 text-zinc-500 text-sm text-center">No spread data today.</div>
-          ) : (
-            <div className="space-y-2">
-              {spreads.map((r: any) => <EdgeRow key={r.id} r={r} />)}
-            </div>
-          )}
-        </div>
-
-        <div>
-          <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-4">Totals</h2>
-          {totals.length === 0 ? (
-            <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 text-zinc-500 text-sm text-center">No totals data today.</div>
-          ) : (
-            <div className="space-y-2">
-              {totals.map((r: any) => <EdgeRow key={r.id} r={r} />)}
-            </div>
-          )}
-        </div>
+        {/* Lines table */}
+        {filtered.length === 0 ? (
+          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 text-zinc-500 text-sm text-center">
+            No {betType} lines for {sport} today.
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {filtered.map((r: any) => (
+              <div key={r.id} className="bg-zinc-900 border border-zinc-800 rounded-lg px-5 py-4 flex items-center justify-between">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xs text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded">{r.sport}</span>
+                    {r.edge_pct >= 5.5 && <span className="text-xs bg-green-400 text-black px-2 py-0.5 rounded font-bold">BET</span>}
+                    <span className="text-sm text-zinc-300">{r.away_team} @ {r.home_team}</span>
+                  </div>
+                  <div className="text-white font-bold">{formatFair(r)}</div>
+                  <div className="text-xs text-zinc-500">Market: {r.market_value} · {r.game_date}</div>
+                </div>
+                <div className="text-right space-y-1">
+                  <div className={`font-bold text-lg ${edgeColor(diff(r))}`}>{diff(r).toFixed(1)} pts</div>
+                  <div className="text-zinc-500 text-xs">vs market</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </main>
     </div>
   )
