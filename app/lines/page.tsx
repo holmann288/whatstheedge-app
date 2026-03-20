@@ -11,7 +11,8 @@ const supabase = createClient(
 )
 
 const SPORTS = ['All', 'NBA', 'NCAAB', 'MLB']
-const BET_TYPES = ['Spreads', 'O/U', 'Moneyline']
+const BET_TYPES_ALL = ['Spreads', 'O/U', 'Moneyline']
+  const BET_TYPES = sport === 'NCAAB' ? ['Spreads', 'O/U'] : BET_TYPES_ALL
 
 export default function LinesPage() {
   const [rows, setRows] = useState<any[]>([])
@@ -65,7 +66,7 @@ export default function LinesPage() {
         {/* Sport filter */}
         <div className="flex gap-2 flex-wrap">
           {SPORTS.map(s => (
-            <button key={s} onClick={() => setSport(s)}
+            <button key={s} onClick={() => { setSport(s); if (s === 'NCAAB' && betType === 'Moneyline') setBetType('Spreads') }}
               className={`px-4 py-1.5 rounded text-xs font-bold uppercase tracking-widest transition
                 ${sport === s ? 'bg-green-400 text-black' : 'bg-zinc-800 text-zinc-400 hover:text-white'}`}>
               {s}
