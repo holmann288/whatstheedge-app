@@ -16,7 +16,7 @@ export default async function Home() {
   ])
 
   const signals = edgesRes.data || []
-  const { avgClv, pctPos, n } = clvStats
+  const { avgClv, avgClvPositive, pctPos, n } = clvStats
 
   const visibleSignals = user ? signals : signals.slice(0, 1)
   const lockedCount = signals.length - visibleSignals.length
@@ -30,7 +30,7 @@ export default async function Home() {
         <div className="grid grid-cols-3 gap-4">
           <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
             <div className="text-zinc-500 text-xs uppercase tracking-widest mb-1">Avg CLV</div>
-            <div className="text-2xl font-bold text-green-400">+{avgClv}%</div>
+            <div className={`text-2xl font-bold ${avgClvPositive ? "text-green-400" : "text-red-400"}`}>{avgClvPositive ? "+" : "-"}{avgClv}%</div>
             <div className="text-zinc-600 text-xs mt-1">{n} unique bets</div>
           </div>
           <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">

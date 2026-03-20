@@ -27,5 +27,6 @@ export async function getDeduplicatedCLV() {
   const avg = clvs.reduce((sum, c) => sum + c, 0) / n * 100
   const pctPos = clvs.filter(c => c > 0).length / n * 100
 
-  return { avgClv: avg.toFixed(2), pctPos: pctPos.toFixed(1), n }
+  const avgClvNum = avg
+  return { avgClv: Math.abs(avg).toFixed(2), avgClvPositive: avg >= 0, pctPos: pctPos.toFixed(1), n }
 }
