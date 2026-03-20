@@ -3,36 +3,37 @@ import { supabase } from './lib/supabase'
 export default async function Home() {
   const today = new Date().toISOString().split('T')[0]
 
-  const { data: edges } = await supabase
-    .from('edges')
-    .select('*')
-    .gte('edge_pct', 5.5)
-    .eq('game_date', today)
-    .in('bet_type', ['spread', 'total'])
-    .order('edge_pct', { ascending: false })
+  const [edgesRes, clvRes] = await Promise.all([
+    supabase
+      .from('edges')
+      .select('*')
+      .gte('edge_pct', 5.5)
+      .eq('game_date', today)
+      .in('bet_type', ['spread', 'total'])
+      .order('edge_pct', { ascending: false }),
+    supabase
+      .from('scan_results')
+      .select('clv')
+      .not('clv', 'is', null)
+  ])
 
-  const signals = edges || []
+  const signals = edgesRes.data || []
+  const clvData = clvRes.data || []
+  const avgClv = clvData.length > 0
+    ? (clvData.reduce((sum, r) => sum + r.clv, 0) / clvData.length * 100).toFixed(2)
+    : '0.00'
+  const pctPos = clvData.length > 0
+    ? ((clvData.filter(r => r.clv > 0).length / clvData.length) * 100).toFixed(1)
+    : '0.0'
 
   const formatEdge = (s: any) => {
-    if (s.bet_type === 'spread') {
-      const diff = Math.abs(s.fair_value - s.market_value)
-      return `${diff.toFixed(1)} pts`
-    }
-    if (s.bet_type === 'total') {
-      const diff = Math.abs(s.fair_value - s.market_value)
-      return `${diff.toFixed(1)} pts`
-    }
-    return `${s.edge_pct}%`
+    const diff = Math.abs(s.fair_value - s.market_value)
+    return `${diff.toFixed(1)} pts`
   }
 
   const formatSignal = (s: any) => {
-    if (s.bet_type === 'spread') {
-      const val = s.fair_value
-      return `Spread ${val > 0 ? '+' : ''}${val}`
-    }
-    if (s.bet_type === 'total') {
-      return `Total ${s.direction === 'over' ? 'Over' : 'Under'} ${s.fair_value}`
-    }
+    if (s.bet_type === 'spread') return `Spread ${s.fair_value > 0 ? '+' : ''}${s.fair_value}`
+    if (s.bet_type === 'total') return `Total ${s.direction === 'over' ? 'Over' : 'Under'} ${s.fair_value}`
     return s.bet_type
   }
 
@@ -56,8 +57,8 @@ export default async function Home() {
       <main className="max-w-4xl mx-auto px-6 py-10 space-y-10">
         <div className="grid grid-cols-3 gap-4">
           {[
-            { label: "Avg CLV", value: "+1.68%", positive: true },
-            { label: "CLV Positive", value: "65%", positive: true },
+            { label: "Avg CLV", value: `+${avgClv}%`, positive: true },
+            { label: "CLV Positive", value: `${pctPos}%`, positive: true },
             { label: "Active Signals", value: signals.length.toString(), positive: true },
           ].map((stat) => (
             <div key={stat.label} className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
@@ -100,8 +101,8 @@ export default async function Home() {
         <div>
           <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-4">Morning Briefing</h2>
           <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 space-y-3 text-sm text-zinc-300 leading-relaxed">
-            <p>Model MAE holding at 10.65 — within healthy range. CLV tracker showing positive results across 65% of resolved bets.</p>
-            <p className="text-zinc-500 text-xs">Generated 8:00 AM · Next update in 4h</p>
+            <p>Model tracking {clvData.length} resolved bets. Avg CLV +{avgClv}% — beating the closing line {pctPos}% of the time.</p>
+            <p className="text-zinc-500 text-xs">Updated daily · CLV measures edge vs closing market</p>
           </div>
         </div>
 
