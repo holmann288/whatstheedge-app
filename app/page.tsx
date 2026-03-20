@@ -3,6 +3,7 @@ import { getDeduplicatedCLV } from './lib/clv'
 import Link from 'next/link'
 import Header from './components/Header'
 import Nav from './components/Nav'
+import SignalCard from './components/SignalCard'
 
 export default async function Home() {
   const supabase = await createClient()
@@ -23,12 +24,6 @@ export default async function Home() {
   const modelBriefing = modelBriefingRes.data?.content || null
   const { avgClv, pctPos, n } = clvStats
 
-  const formatEdge = (s: any) => `${Math.abs(s.fair_value - s.market_value).toFixed(1)} pts`
-  const formatSignal = (s: any) => {
-    if (s.bet_type === 'spread') return `Spread ${s.fair_value > 0 ? '+' : ''}${s.fair_value}`
-    if (s.bet_type === 'total') return `Total ${s.direction === 'over' ? 'Over' : 'Under'} ${s.fair_value}`
-    return s.bet_type
-  }
 
   const visibleSignals = user ? signals : signals.slice(0, 1)
   const lockedCount = signals.length - visibleSignals.length
