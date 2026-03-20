@@ -71,9 +71,9 @@ export default function LinesPage() {
       const line = Math.abs(mkt)
       const direction = r.direction === 'home' ? home : away
       if (mkt < 0) {
-        return `Win if ${dog} loses by fewer than ${line} points, or wins outright. Model says this game is much closer than the market thinks.`
+        return `Win if ${dog} loses by fewer than ${line} points, or wins outright. Model says this game is much closer than Vegas thinks.`
       } else {
-        return `Win if ${away} wins by more than ${line} points. Model sees ${away} as stronger than the market implies.`
+        return `Win if ${away} wins by more than ${line} points. Model sees ${away} as stronger than Vegas implies.`
       }
     }
 
@@ -81,9 +81,9 @@ export default function LinesPage() {
       const direction = fair > mkt ? 'over' : 'under'
       const line = mkt
       if (direction === 'over') {
-        return `Win if ${away} + ${home} combine for more than ${line} total points. Model projects a higher-scoring game than the market expects.`
+        return `Win if ${away} + ${home} combine for more than ${line} total points. Model projects a higher-scoring game than Vegas expects.`
       } else {
-        return `Win if ${away} + ${home} combine for fewer than ${line} total points. Model projects a lower-scoring game than the market expects.`
+        return `Win if ${away} + ${home} combine for fewer than ${line} total points. Model projects a lower-scoring game than Vegas expects.`
       }
     }
 
