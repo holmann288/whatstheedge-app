@@ -3,7 +3,7 @@ import { supabase } from './lib/supabase'
 export default async function Home() {
   const today = new Date().toISOString().split('T')[0]
 
-  const [edgesRes, clvRes] = await Promise.all([
+  const [edgesRes, clvRes, briefingRes] = await Promise.all([
     supabase
       .from('edges')
       .select('*')
@@ -14,11 +14,21 @@ export default async function Home() {
     supabase
       .from('scan_results')
       .select('clv')
-      .not('clv', 'is', null)
+      .not('clv', 'is', null),
+    supabase
+      .from('briefings')
+      .select('content, created_at')
+      .eq('id', `morning_${today}`)
+      .single()
   ])
 
   const signals = edgesRes.data || []
   const clvData = clvRes.data || []
+  const briefing = briefingRes.data?.content || null
+  const briefingTime = briefingRes.data?.created_at
+    ? new Date(briefingRes.data.created_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+    : null
+
   const avgClv = clvData.length > 0
     ? (clvData.reduce((sum, r) => sum + r.clv, 0) / clvData.length * 100).toFixed(2)
     : '0.00'
@@ -101,8 +111,14 @@ export default async function Home() {
         <div>
           <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-4">Morning Briefing</h2>
           <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 space-y-3 text-sm text-zinc-300 leading-relaxed">
-            <p>Model tracking {clvData.length} resolved bets. Avg CLV +{avgClv}% — beating the closing line {pctPos}% of the time.</p>
-            <p className="text-zinc-500 text-xs">Updated daily · CLV measures edge vs closing market</p>
+            {briefing ? (
+              <>
+                <p className="whitespace-pre-wrap">{briefing}</p>
+                {briefingTime && <p className="text-zinc-500 text-xs">Generated {briefingTime}</p>}
+              </>
+            ) : (
+              <p className="text-zinc-500">No briefing yet today. Check back after 8:00 AM.</p>
+            )}
           </div>
         </div>
 
