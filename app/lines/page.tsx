@@ -176,7 +176,7 @@ export default function LinesPage() {
                 </div>
                 <div className="text-right space-y-1">
                   <div className={`font-bold text-lg ${edgeColor(r)}`}>{diffLabel(r)}</div>
-                  <div className="text-zinc-500 text-xs">vs market</div>
+                  <div className="text-zinc-500 text-xs">Vegas Line</div>
                 </div>
               </div>
             ))}

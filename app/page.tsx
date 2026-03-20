@@ -75,7 +75,7 @@ export default async function Home() {
                   </div>
                   <div className="text-right space-y-1">
                     <div className="text-green-400 font-bold text-lg">{formatEdge(s)}</div>
-                    <div className="text-xs text-zinc-500">vs market</div>
+                    <div className="text-xs text-zinc-500">Vegas Line</div>
                   </div>
                 </div>
               ))}
