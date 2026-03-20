@@ -53,7 +53,10 @@ export default async function CLVPage() {
     .select('content')
     .eq('id', `clv_${today}`)
     .single()
-  const clvBriefing = clvBriefingData?.content || null
+  const clvBriefing = clvBriefingData?.content
+    ?.replace(/#{1,3} /g, '')
+    ?.replace(/\*\*(.*?)\*\*/g, '$1')
+    ?.replace(/\*(.*?)\*/g, '$1') || null
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white font-mono">
