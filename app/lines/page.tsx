@@ -42,18 +42,27 @@ export default function LinesPage() {
     .filter(r => sport === 'All' || r.sport === sport)
     .filter(r => r.bet_type === typeMap[betType])
 
-  const diff = (r: any) => Math.abs(r.fair_value - r.market_value)
+  const diff = (r: any) => {
+    if (r.bet_type === 'moneyline') return Math.abs(r.edge_pct)
+    return Math.abs(r.fair_value - r.market_value)
+  }
+
+  const diffLabel = (r: any) => {
+    if (r.bet_type === 'moneyline') return `${Math.abs(r.edge_pct).toFixed(1)}%`
+    return `${diff(r).toFixed(1)} pts`
+  }
 
   const formatFair = (r: any) => {
     if (r.bet_type === 'spread') return `Fair: ${r.fair_value > 0 ? '+' : ''}${r.fair_value}`
-    if (r.bet_type === 'total') return `Fair: ${r.fair_value}`
+    if (r.bet_type === 'total') return `Fair Total: ${r.fair_value}`
+    if (r.bet_type === 'moneyline') return `Fair ML: ${r.fair_value > 0 ? '+' : ''}${r.fair_value}`
     return `Fair: ${r.fair_value}`
   }
 
-  const edgeColor = (d: number) => {
-    if (d >= 5.5) return 'text-green-400'
-    if (d >= 3) return 'text-yellow-400'
-    return 'text-zinc-400'
+  const edgeColor = (r: any) => {
+    const d = diff(r)
+    if (r.bet_type === 'moneyline') return d >= 10 ? 'text-green-400' : d >= 5 ? 'text-yellow-400' : 'text-zinc-400'
+    return d >= 5.5 ? 'text-green-400' : d >= 3 ? 'text-yellow-400' : 'text-zinc-400'
   }
 
   return (
@@ -126,7 +135,7 @@ export default function LinesPage() {
                   <div className="text-xs text-zinc-500">Market: {r.market_value} · {r.game_date}</div>
                 </div>
                 <div className="text-right space-y-1">
-                  <div className={`font-bold text-lg ${edgeColor(diff(r))}`}>{diff(r).toFixed(1)} pts</div>
+                  <div className={`font-bold text-lg ${edgeColor(r)}`}>{diffLabel(r)}</div>
                   <div className="text-zinc-500 text-xs">vs market</div>
                 </div>
               </div>
