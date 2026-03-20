@@ -1,6 +1,7 @@
 import { createClient } from '../lib/supabase-server'
-import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import Header from '../components/Header'
+import Nav from '../components/Nav'
 
 export default async function OutcomesPage() {
   const supabase = await createClient()
@@ -15,19 +16,12 @@ export default async function OutcomesPage() {
     .limit(100)
 
   const resolved = rows || []
-
-  const spreads = resolved.filter(r => r.bet_type === 'spread')
-  const totals = resolved.filter(r => r.bet_type === 'total')
+  const spreads = resolved.filter((r: any) => r.bet_type === 'spread')
+  const totals = resolved.filter((r: any) => r.bet_type === 'total')
 
   const hitRate = (data: any[]) => {
     if (!data.length) return null
-    const hits = data.filter(r => r.outcome === 'hit').length
-    return (hits / data.length * 100).toFixed(1)
-  }
-
-  const avgEdge = (data: any[]) => {
-    if (!data.length) return null
-    return (data.reduce((s, r) => s + Math.abs(r.fair_value - r.market_value), 0) / data.length).toFixed(1)
+    return (data.filter(r => r.outcome === 'hit').length / data.length * 100).toFixed(1)
   }
 
   const formatSignal = (r: any) => {
@@ -43,21 +37,10 @@ export default async function OutcomesPage() {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white font-mono">
-      <header className="border-b border-zinc-800 px-6 py-4 flex items-center justify-between">
-        <div>
-          <Link href="/">
-            <span className="text-green-400 font-bold text-xl tracking-tight">whats</span>
-            <span className="text-white font-bold text-xl tracking-tight">theedge</span>
-          </Link>
-          <span className="ml-3 text-zinc-500 text-xs uppercase tracking-widest">Model Tracker</span>
-        </div>
-        <div className="flex items-center gap-4 text-xs text-zinc-400">
-          <Link href="/" className="hover:text-white transition">← Back</Link>
-        </div>
-      </header>
+      <Header user={user} />
+      <Nav active="/outcomes" />
 
       <main className="max-w-4xl mx-auto px-6 py-10 space-y-10">
-
         <div className="grid grid-cols-4 gap-4">
           {[
             { label: 'Total Resolved', value: resolved.length.toString() },
@@ -91,7 +74,7 @@ export default async function OutcomesPage() {
                     <div className="text-white text-sm font-bold">{formatSignal(r)}</div>
                     <div className="text-xs text-zinc-500">
                       Market: {r.market_value} · Edge: {Math.abs(r.fair_value - r.market_value).toFixed(1)} pts
-                      {r.actual_home_score != null && ` · Final: ${r.away_team.split(' ').pop()} ${r.actual_away_score} - ${r.home_team.split(' ').pop()} ${r.actual_home_score}`}
+                      {r.actual_home_score != null && ` · Final: ${r.away_score ?? r.actual_away_score} - ${r.actual_home_score}`}
                     </div>
                   </div>
                   <div className={`font-bold text-sm uppercase ${outcomeColor(r.outcome)}`}>
