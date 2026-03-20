@@ -59,6 +59,37 @@ export default function LinesPage() {
     return `Fair: ${r.fair_value}`
   }
 
+  const plainEnglish = (r: any) => {
+    const home = r.home_team?.split(' ').slice(-1)[0]
+    const away = r.away_team?.split(' ').slice(-1)[0]
+    const mkt = r.market_value
+    const fair = r.fair_value
+
+    if (r.bet_type === 'spread') {
+      const favored = mkt < 0 ? home : away
+      const dog = mkt < 0 ? away : home
+      const line = Math.abs(mkt)
+      const direction = r.direction === 'home' ? home : away
+      if (mkt < 0) {
+        return `Win if ${dog} loses by fewer than ${line} points, or wins outright. Model says this game is much closer than the market thinks.`
+      } else {
+        return `Win if ${away} wins by more than ${line} points. Model sees ${away} as stronger than the market implies.`
+      }
+    }
+
+    if (r.bet_type === 'total') {
+      const direction = fair > mkt ? 'over' : 'under'
+      const line = mkt
+      if (direction === 'over') {
+        return `Win if ${away} + ${home} combine for more than ${line} total points. Model projects a higher-scoring game than the market expects.`
+      } else {
+        return `Win if ${away} + ${home} combine for fewer than ${line} total points. Model projects a lower-scoring game than the market expects.`
+      }
+    }
+
+    return null
+  }
+
   const edgeColor = (r: any) => {
     const d = diff(r)
     if (r.bet_type === 'moneyline') return d >= 10 ? 'text-green-400' : d >= 5 ? 'text-yellow-400' : 'text-zinc-400'
@@ -139,6 +170,9 @@ export default function LinesPage() {
                   </div>
                   <div className="text-white font-bold">{formatFair(r)}</div>
                   <div className="text-xs text-zinc-500">Market: {r.market_value} · {r.game_date}</div>
+                  {plainEnglish(r) && (
+                    <div className="text-xs text-zinc-400 mt-1 max-w-sm">{plainEnglish(r)}</div>
+                  )}
                 </div>
                 <div className="text-right space-y-1">
                   <div className={`font-bold text-lg ${edgeColor(r)}`}>{diffLabel(r)}</div>
