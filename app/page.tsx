@@ -59,20 +59,7 @@ export default async function Home() {
           ) : (
             <div className="space-y-3">
               {visibleSignals.map((s: any) => (
-                <div key={s.id} className="bg-zinc-900 border border-zinc-800 rounded-lg p-5 flex items-center justify-between">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded">{s.sport}</span>
-                      <span className="text-sm text-zinc-300">{s.away_team} @ {s.home_team}</span>
-                    </div>
-                    <div className="text-white font-bold text-lg">{formatSignal(s)}</div>
-                    <div className="text-xs text-zinc-500">Market: {s.market_value}</div>
-                  </div>
-                  <div className="text-right space-y-1">
-                    <div className="text-green-400 font-bold text-lg">{formatEdge(s)}</div>
-                    <div className="text-xs text-zinc-500">Vegas Line</div>
-                  </div>
-                </div>
+                <SignalCard key={s.id} s={s} />
               ))}
               {!user && lockedCount > 0 && (
                 <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-8 text-center space-y-4">
