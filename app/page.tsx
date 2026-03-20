@@ -13,6 +13,29 @@ export default async function Home() {
 
   const signals = edges || []
 
+  const formatEdge = (s: any) => {
+    if (s.bet_type === 'spread') {
+      const diff = Math.abs(s.fair_value - s.market_value)
+      return `${diff.toFixed(1)} pts`
+    }
+    if (s.bet_type === 'total') {
+      const diff = Math.abs(s.fair_value - s.market_value)
+      return `${diff.toFixed(1)} pts`
+    }
+    return `${s.edge_pct}%`
+  }
+
+  const formatSignal = (s: any) => {
+    if (s.bet_type === 'spread') {
+      const val = s.fair_value
+      return `Spread ${val > 0 ? '+' : ''}${val}`
+    }
+    if (s.bet_type === 'total') {
+      return `Total ${s.direction === 'over' ? 'Over' : 'Under'} ${s.fair_value}`
+    }
+    return s.bet_type
+  }
+
   return (
     <div className="min-h-screen bg-zinc-950 text-white font-mono">
       <header className="border-b border-zinc-800 px-6 py-4 flex items-center justify-between">
@@ -61,14 +84,11 @@ export default async function Home() {
                       <span className="text-xs text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded">{s.sport}</span>
                       <span className="text-sm text-zinc-300">{s.away_team} @ {s.home_team}</span>
                     </div>
-                    <div className="text-white font-bold text-lg">
-                      {s.bet_type === 'spread' ? `Spread ${s.fair_value > 0 ? '+' : ''}${s.fair_value}` : `Total ${s.direction === 'over' ? 'Over' : 'Under'} ${s.fair_value}`}
-                    </div>
+                    <div className="text-white font-bold text-lg">{formatSignal(s)}</div>
+                    <div className="text-xs text-zinc-500">Market: {s.market_value}</div>
                   </div>
                   <div className="text-right space-y-1">
-                    <div className="text-green-400 font-bold text-lg">
-                      {s.edge_pct > 0 ? '+' : ''}{s.edge_pct} pts
-                    </div>
+                    <div className="text-green-400 font-bold text-lg">{formatEdge(s)}</div>
                     <div className="text-xs text-zinc-500">vs market</div>
                   </div>
                 </div>
