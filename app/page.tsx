@@ -1,30 +1,17 @@
 import { supabase } from './lib/supabase'
+import { createClient } from './lib/supabase-server'
+import Link from 'next/link'
 
 export default async function Home() {
   const today = new Date().toISOString().split('T')[0]
+  const serverSupabase = await createClient()
+  const { data: { user } } = await serverSupabase.auth.getUser()
 
   const [edgesRes, clvRes, briefingRes, clvBriefingRes] = await Promise.all([
-    supabase
-      .from('edges')
-      .select('*')
-      .gte('edge_pct', 5.5)
-      .eq('game_date', today)
-      .in('bet_type', ['spread', 'total'])
-      .order('edge_pct', { ascending: false }),
-    supabase
-      .from('scan_results')
-      .select('clv')
-      .not('clv', 'is', null),
-    supabase
-      .from('briefings')
-      .select('content, created_at')
-      .eq('id', `morning_${today}`)
-      .single(),
-    supabase
-      .from('briefings')
-      .select('content, created_at')
-      .eq('id', `clv_${today}`)
-      .single()
+    supabase.from('edges').select('*').gte('edge_pct', 5.5).eq('game_date', today).in('bet_type', ['spread', 'total']).order('edge_pct', { ascending: false }),
+    supabase.from('scan_results').select('clv').not('clv', 'is', null),
+    supabase.from('briefings').select('content, created_at').eq('id', `morning_${today}`).single(),
+    supabase.from('briefings').select('content, created_at').eq('id', `clv_${today}`).single()
   ])
 
   const signals = edgesRes.data || []
@@ -40,12 +27,14 @@ export default async function Home() {
     : '0.0'
 
   const formatEdge = (s: any) => `${Math.abs(s.fair_value - s.market_value).toFixed(1)} pts`
-
   const formatSignal = (s: any) => {
     if (s.bet_type === 'spread') return `Spread ${s.fair_value > 0 ? '+' : ''}${s.fair_value}`
     if (s.bet_type === 'total') return `Total ${s.direction === 'over' ? 'Over' : 'Under'} ${s.fair_value}`
     return s.bet_type
   }
+
+  const visibleSignals = user ? signals : signals.slice(0, 1)
+  const lockedCount = signals.length - visibleSignals.length
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white font-mono">
@@ -55,27 +44,31 @@ export default async function Home() {
           <span className="text-white font-bold text-xl tracking-tight">theedge</span>
           <span className="ml-3 text-zinc-500 text-xs uppercase tracking-widest">Beta</span>
         </div>
-        <div className="flex items-center gap-4 text-xs text-zinc-400">
-          <span className="flex items-center gap-1">
+        <div className="flex items-center gap-4 text-xs">
+          <span className="flex items-center gap-1 text-zinc-400">
             <span className="w-2 h-2 rounded-full bg-green-400 inline-block animate-pulse"></span>
             Live
           </span>
-          <span>{today}</span>
+          {user ? (
+            <span className="text-zinc-500">{user.email}</span>
+          ) : (
+            <Link href="/login" className="bg-green-400 text-black px-3 py-1 rounded font-bold hover:bg-green-300 transition">
+              Sign In
+            </Link>
+          )}
         </div>
       </header>
 
       <main className="max-w-4xl mx-auto px-6 py-10 space-y-10">
         <div className="grid grid-cols-3 gap-4">
           {[
-            { label: "Avg CLV", value: `+${avgClv}%`, positive: true },
-            { label: "CLV Positive", value: `${pctPos}%`, positive: true },
-            { label: "Active Signals", value: signals.length.toString(), positive: true },
+            { label: "Avg CLV", value: `+${avgClv}%` },
+            { label: "CLV Positive", value: `${pctPos}%` },
+            { label: "Active Signals", value: signals.length.toString() },
           ].map((stat) => (
             <div key={stat.label} className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
               <div className="text-zinc-500 text-xs uppercase tracking-widest mb-1">{stat.label}</div>
-              <div className={`text-2xl font-bold ${stat.positive ? "text-green-400" : "text-red-400"}`}>
-                {stat.value}
-              </div>
+              <div className="text-2xl font-bold text-green-400">{stat.value}</div>
             </div>
           ))}
         </div>
@@ -88,7 +81,7 @@ export default async function Home() {
             </div>
           ) : (
             <div className="space-y-3">
-              {signals.map((s: any) => (
+              {visibleSignals.map((s: any) => (
                 <div key={s.id} className="bg-zinc-900 border border-zinc-800 rounded-lg p-5 flex items-center justify-between">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
@@ -104,28 +97,38 @@ export default async function Home() {
                   </div>
                 </div>
               ))}
+
+              {!user && lockedCount > 0 && (
+                <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-8 text-center space-y-4">
+                  <div className="text-zinc-400 text-sm">{lockedCount} more signal{lockedCount > 1 ? 's' : ''} today</div>
+                  <div className="text-zinc-600 text-xs">Sign in to unlock all signals, CLV analysis, and morning briefings</div>
+                  <Link href="/login" className="inline-block bg-green-400 text-black px-6 py-2 rounded font-bold text-sm hover:bg-green-300 transition">
+                    Sign In to Unlock
+                  </Link>
+                </div>
+              )}
             </div>
           )}
         </div>
 
-        <div>
-          <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-4">Morning Briefing</h2>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 text-sm text-zinc-300 leading-relaxed">
-            {briefing ? (
-              <p className="whitespace-pre-wrap">{briefing}</p>
-            ) : (
-              <p className="text-zinc-500">No briefing yet today. Check back after 8:00 AM.</p>
-            )}
-          </div>
-        </div>
-
-        {clvBriefing && (
-          <div>
-            <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-4">CLV Analysis</h2>
-            <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 text-sm text-zinc-300 leading-relaxed">
-              <p className="whitespace-pre-wrap">{clvBriefing}</p>
+        {user && (
+          <>
+            <div>
+              <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-4">Morning Briefing</h2>
+              <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 text-sm text-zinc-300 leading-relaxed">
+                {briefing ? <p className="whitespace-pre-wrap">{briefing}</p> : <p className="text-zinc-500">No briefing yet today. Check back after 8:00 AM.</p>}
+              </div>
             </div>
-          </div>
+
+            {clvBriefing && (
+              <div>
+                <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-4">CLV Analysis</h2>
+                <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 text-sm text-zinc-300 leading-relaxed">
+                  <p className="whitespace-pre-wrap">{clvBriefing}</p>
+                </div>
+              </div>
+            )}
+          </>
         )}
 
         <div className="border border-dashed border-zinc-800 rounded-lg p-6 text-center text-zinc-600 text-sm">
