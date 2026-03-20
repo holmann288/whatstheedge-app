@@ -105,7 +105,7 @@ export default function LinesPage() {
           <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
             <div className="text-zinc-500 text-xs uppercase tracking-widest mb-1">Avg Edge</div>
             <div className="text-2xl font-bold text-green-400">
-              {filtered.length ? (filtered.reduce((s, r) => s + diff(r), 0) / filtered.length).toFixed(1) : '—'} pts
+              {filtered.length ? (filtered.reduce((s, r) => s + diff(r), 0) / filtered.length).toFixed(1) : '—'}{betType === 'Moneyline' ? '%' : ' pts'}
             </div>
           </div>
           <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
