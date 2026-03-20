@@ -1,12 +1,12 @@
 import Link from 'next/link'
 
 const tabs = [
+  { label: 'Start Here', href: '/start' },
   { label: 'Signals', href: '/' },
   { label: 'Fair Value', href: '/lines' },
   { label: 'Model Tracker', href: '/outcomes' },
   { label: 'CLV', href: '/clv' },
   { label: 'Briefings', href: '/briefings' },
-  { label: 'Start Here', href: '/start' },
 ]
 
 export default function Nav({ active }: { active: string }) {
