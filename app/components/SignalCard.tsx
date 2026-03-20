@@ -15,7 +15,8 @@ export default function SignalCard({ s }: { s: any }) {
       return `${away} wins by ${Math.abs(mkt)} points`
     }
     if (s.bet_type === 'total') {
-      return `Combined score is ${mkt} points`
+      const dir = fair > mkt ? 'OVER' : 'UNDER'
+      return `Combined score goes ${dir} ${mkt} points`
     }
     return `${mkt}`
   }
@@ -27,7 +28,8 @@ export default function SignalCard({ s }: { s: any }) {
       return `A toss-up`
     }
     if (s.bet_type === 'total') {
-      return `Combined score is ${fair} points`
+      const dir = fair > mkt ? 'OVER' : 'UNDER'
+      return `Combined score goes ${dir} ${fair} points`
     }
     return `${fair}`
   }
@@ -53,29 +55,29 @@ export default function SignalCard({ s }: { s: any }) {
   return (
     <div className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden">
       {/* Header */}
-      <div className="px-5 pt-5 pb-3 flex items-start justify-between gap-4">
+      <div className="px-4 pt-4 pb-2 flex items-start justify-between gap-4">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-xs text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded">{s.sport}</span>
           <span className="text-xs bg-green-400 text-black px-2 py-0.5 rounded font-bold">BET</span>
           <span className="text-sm text-zinc-300">{away} @ {home}</span>
         </div>
-        <span className="text-zinc-500 text-xs shrink-0">{s.game_date}</span>
+
       </div>
 
       {/* Three info rows */}
-      <div className="px-5 pb-4 space-y-3">
+      <div className="px-4 pb-3 space-y-2">
         <div className="grid grid-cols-3 gap-3">
-          <div className="bg-zinc-800 rounded-lg p-3 space-y-1">
+          <div className="bg-zinc-800 rounded-lg p-2 space-y-0.5">
             <div className="text-zinc-500 text-xs uppercase tracking-widest">Vegas thinks</div>
-            <div className="text-white text-sm font-medium leading-snug">{vegasSays()}</div>
+            <div className="text-white text-xs font-medium leading-snug">{vegasSays()}</div>
           </div>
-          <div className="bg-zinc-800 rounded-lg p-3 space-y-1">
+          <div className="bg-zinc-800 rounded-lg p-2 space-y-0.5">
             <div className="text-zinc-500 text-xs uppercase tracking-widest">Our model thinks</div>
-            <div className="text-green-400 text-sm font-medium leading-snug">{modelSays()}</div>
+            <div className="text-green-400 text-xs font-medium leading-snug">{modelSays()}</div>
           </div>
-          <div className="bg-zinc-800 rounded-lg p-3 space-y-1">
+          <div className="bg-zinc-800 rounded-lg p-2 space-y-0.5">
             <div className="text-zinc-500 text-xs uppercase tracking-widest">You win if</div>
-            <div className="text-white text-sm font-medium leading-snug">{winCondition}</div>
+            <div className="text-white text-xs font-medium leading-snug">{winCondition}</div>
           </div>
         </div>
 
