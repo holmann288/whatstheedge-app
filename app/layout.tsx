@@ -16,6 +16,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={geistMono.className}>
         <AuthProvider>
           {children}
+          <footer className="border-t border-zinc-800 mt-16 py-6 px-6 text-center">
+            <p className="text-zinc-600 text-xs leading-relaxed">
+              If you or someone you know has a gambling problem, call or text the National Problem Gambling Helpline: <span className="text-zinc-500">1-800-522-4700</span> (available 24/7). 
+              What's the Edge provides analytical information only and does not facilitate or encourage gambling. Must be 21+ and in a jurisdiction where sports betting is legal.
+            </p>
+          </footer>
         </AuthProvider>
       </body>
     </html>
