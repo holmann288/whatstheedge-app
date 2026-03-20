@@ -26,7 +26,7 @@ export default function LoginPage() {
       setError(result.error)
       setLoading(false)
     } else {
-      window.location.href = '/'
+      window.location.href = (result as any).redirect || '/'
     }
   }
 
