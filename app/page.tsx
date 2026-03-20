@@ -53,7 +53,12 @@ export default async function Home() {
             Live
           </span>
           {user ? (
-            <span className="text-zinc-500 truncate max-w-32">{user.email}</span>
+            <div className="flex items-center gap-3">
+              <span className="text-zinc-500 truncate max-w-32 hidden sm:block">{user.email}</span>
+              <form action={async () => { 'use server'; const { createClient } = await import('./lib/supabase-server'); const sb = await createClient(); await sb.auth.signOut(); }}>
+                <button type="submit" className="text-zinc-500 text-xs hover:text-white transition">Sign Out</button>
+              </form>
+            </div>
           ) : (
             <Link href="/login" className="bg-green-400 text-black px-3 py-1 rounded font-bold hover:bg-green-300 transition">
               Sign In
