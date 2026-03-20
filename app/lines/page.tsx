@@ -116,6 +116,12 @@ export default function LinesPage() {
           </div>
         </div>
 
+        {betType === 'Moneyline' && (
+          <div className="bg-zinc-900 border border-yellow-600 rounded-lg px-4 py-3 text-xs text-yellow-500">
+            ⚠ Moneyline fair values are experimental. Spreads and totals are the primary signals.
+          </div>
+        )}
+
         {/* Lines table */}
         {filtered.length === 0 ? (
           <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 text-zinc-500 text-sm text-center">
