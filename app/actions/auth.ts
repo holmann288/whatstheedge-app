@@ -2,22 +2,16 @@
 import { createClient } from '../lib/supabase-server'
 import { redirect } from 'next/navigation'
 
-export async function signIn(formData: FormData) {
+export async function handleAuth(formData: FormData) {
   const supabase = await createClient()
-  const { error } = await supabase.auth.signInWithPassword({
-    email: formData.get('email') as string,
-    password: formData.get('password') as string,
-  })
-  if (error) return { error: error.message }
-  redirect('/')
-}
+  const email = formData.get('email') as string
+  const password = formData.get('password') as string
+  const mode = formData.get('mode') as string
 
-export async function signUp(formData: FormData) {
-  const supabase = await createClient()
-  const { error } = await supabase.auth.signUp({
-    email: formData.get('email') as string,
-    password: formData.get('password') as string,
-  })
+  const { error } = mode === 'signup'
+    ? await supabase.auth.signUp({ email, password })
+    : await supabase.auth.signInWithPassword({ email, password })
+
   if (error) return { error: error.message }
   redirect('/')
 }

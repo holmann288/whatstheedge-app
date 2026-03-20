@@ -1,22 +1,14 @@
 'use client'
 import { useState } from 'react'
-import { signIn, signUp } from '../actions/auth'
+import { handleAuth } from '../actions/auth'
 import { supabase } from '../lib/supabase'
+import { useFormState } from 'react-dom'
+
+const initialState = { error: '' }
 
 export default function LoginPage() {
   const [isSignUp, setIsSignUp] = useState(false)
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-
-  const handleSubmit = async (formData: FormData) => {
-    setLoading(true)
-    setError('')
-    const result = isSignUp ? await signUp(formData) : await signIn(formData)
-    if (result?.error) {
-      setError(result.error)
-      setLoading(false)
-    }
-  }
+  const [state, formAction] = useFormState(handleAuth, initialState)
 
   const handleGoogle = async () => {
     await supabase.auth.signInWithOAuth({
@@ -45,17 +37,18 @@ export default function LoginPage() {
             <div className="flex-1 h-px bg-zinc-800"/>
           </div>
 
-          <form action={handleSubmit} className="space-y-4">
+          <form action={formAction} className="space-y-4">
+            <input type="hidden" name="mode" value={isSignUp ? 'signup' : 'signin'} />
             <input name="email" type="email" placeholder="Email" required
               className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-green-400"/>
             <input name="password" type="password" placeholder="Password" required
               className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-green-400"/>
 
-            {error && <p className="text-red-400 text-xs">{error}</p>}
+            {state?.error && <p className="text-red-400 text-xs">{state.error}</p>}
 
-            <button type="submit" disabled={loading}
-              className="w-full bg-green-400 text-black rounded-lg py-3 text-sm font-bold hover:bg-green-300 transition disabled:opacity-50">
-              {loading ? 'Loading...' : isSignUp ? 'Create Account' : 'Sign In'}
+            <button type="submit"
+              className="w-full bg-green-400 text-black rounded-lg py-3 text-sm font-bold hover:bg-green-300 transition">
+              {isSignUp ? 'Create Account' : 'Sign In'}
             </button>
           </form>
 
