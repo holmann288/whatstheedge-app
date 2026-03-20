@@ -7,17 +7,20 @@ export default async function Home() {
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  const [edgesRes, clvRes, briefingRes, clvBriefingRes] = await Promise.all([
+  const [edgesRes, clvRes, briefingRes, clvBriefingRes, modelBriefingRes] = await Promise.all([
     supabase.from('edges').select('*').gte('edge_pct', 5.5).eq('game_date', today).in('bet_type', ['spread', 'total']).order('edge_pct', { ascending: false }),
     supabase.from('scan_results').select('clv').not('clv', 'is', null),
     supabase.from('briefings').select('content, created_at').eq('id', `morning_${today}`).single(),
-    supabase.from('briefings').select('content, created_at').eq('id', `clv_${today}`).single()
+    supabase.from('briefings').select('content, created_at').eq('id', `clv_${today}`).single(),
+    supabase.from('briefings').select('content, created_at').eq('id', `model_${today}`).single(),
+    supabase.from('briefings').select('content, created_at').eq('id', `model_${today}`).single()
   ])
 
   const signals = edgesRes.data || []
   const clvData = clvRes.data || []
   const briefing = briefingRes.data?.content || null
   const clvBriefing = clvBriefingRes.data?.content || null
+  const modelBriefing = modelBriefingRes.data?.content || null
 
   const avgClv = clvData.length > 0
     ? (clvData.reduce((sum: number, r: any) => sum + r.clv, 0) / clvData.length * 100).toFixed(2)
@@ -125,6 +128,15 @@ export default async function Home() {
                 <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-4">CLV Analysis</h2>
                 <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 text-sm text-zinc-300 leading-relaxed">
                   <p className="whitespace-pre-wrap">{clvBriefing}</p>
+                </div>
+              </div>
+            )}
+
+            {modelBriefing && (
+              <div>
+                <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-4">Model Investigation</h2>
+                <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 text-sm text-zinc-300 leading-relaxed">
+                  <p className="whitespace-pre-wrap">{modelBriefing}</p>
                 </div>
               </div>
             )}
