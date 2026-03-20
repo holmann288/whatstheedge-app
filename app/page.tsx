@@ -10,20 +10,13 @@ export default async function Home() {
   const today = new Date().toISOString().split('T')[0]
   const { data: { user } } = await supabase.auth.getUser()
 
-  const [edgesRes, clvStats, briefingRes, clvBriefingRes, modelBriefingRes] = await Promise.all([
+  const [edgesRes, clvStats] = await Promise.all([
     supabase.from('edges').select('*').gte('edge_pct', 5.5).eq('game_date', today).in('bet_type', ['spread', 'total']).order('edge_pct', { ascending: false }),
     getDeduplicatedCLV(),
-    supabase.from('briefings').select('content, created_at').eq('id', `morning_${today}`).single(),
-    supabase.from('briefings').select('content, created_at').eq('id', `clv_${today}`).single(),
-    supabase.from('briefings').select('content, created_at').eq('id', `model_${today}`).single()
   ])
 
   const signals = edgesRes.data || []
-  const briefing = briefingRes.data?.content || null
-  const clvBriefing = clvBriefingRes.data?.content || null
-  const modelBriefing = modelBriefingRes.data?.content || null
   const { avgClv, pctPos, n } = clvStats
-
 
   const visibleSignals = user ? signals : signals.slice(0, 1)
   const lockedCount = signals.length - visibleSignals.length
@@ -73,35 +66,6 @@ export default async function Home() {
             </div>
           )}
         </div>
-
-        {user && (
-          <>
-            {briefing && (
-              <div>
-                <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-4">Morning Briefing</h2>
-                <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 text-sm text-zinc-300 leading-relaxed">
-                  <p className="whitespace-pre-wrap">{briefing}</p>
-                </div>
-              </div>
-            )}
-            {clvBriefing && (
-              <div>
-                <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-4">CLV Analysis</h2>
-                <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 text-sm text-zinc-300 leading-relaxed">
-                  <p className="whitespace-pre-wrap">{clvBriefing}</p>
-                </div>
-              </div>
-            )}
-            {modelBriefing && (
-              <div>
-                <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-4">Model Investigation</h2>
-                <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 text-sm text-zinc-300 leading-relaxed">
-                  <p className="whitespace-pre-wrap">{modelBriefing}</p>
-                </div>
-              </div>
-            )}
-          </>
-        )}
 
         <div className="border border-dashed border-zinc-800 rounded-lg p-6 text-center text-zinc-600 text-sm">
           MLB signals launching March 26 · NFL & NCAAF coming this fall · Mobile app coming soon
