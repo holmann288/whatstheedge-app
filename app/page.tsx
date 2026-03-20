@@ -8,6 +8,7 @@ export default async function Home() {
     .select('*')
     .gte('edge_pct', 5.5)
     .eq('game_date', today)
+    .in('bet_type', ['spread', 'total'])
     .order('edge_pct', { ascending: false })
 
   const signals = edges || []
@@ -60,11 +61,15 @@ export default async function Home() {
                       <span className="text-xs text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded">{s.sport}</span>
                       <span className="text-sm text-zinc-300">{s.away_team} @ {s.home_team}</span>
                     </div>
-                    <div className="text-white font-bold text-lg">{s.bet_type} — {s.direction}</div>
+                    <div className="text-white font-bold text-lg">
+                      {s.bet_type === 'spread' ? `Spread ${s.fair_value > 0 ? '+' : ''}${s.fair_value}` : `Total ${s.direction === 'over' ? 'Over' : 'Under'} ${s.fair_value}`}
+                    </div>
                   </div>
                   <div className="text-right space-y-1">
-                    <div className="text-green-400 font-bold text-lg">+{s.edge_pct}%</div>
-                    <div className="text-xs text-zinc-500">Edge</div>
+                    <div className="text-green-400 font-bold text-lg">
+                      {s.edge_pct > 0 ? '+' : ''}{s.edge_pct} pts
+                    </div>
+                    <div className="text-xs text-zinc-500">vs market</div>
                   </div>
                 </div>
               ))}
