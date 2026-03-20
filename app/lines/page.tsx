@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import Header from '../components/Header'
+import SignalCard from '../components/SignalCard'
 import Nav from '../components/Nav'
 import { useRouter } from 'next/navigation'
 
