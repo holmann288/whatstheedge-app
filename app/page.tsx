@@ -44,7 +44,7 @@ export default async function Home() {
         </div>
 
         <div>
-          <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-4">Today's BET Signals</h2>
+          <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-4">Today's Signals</h2>
           {signals.length === 0 ? (
             <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 text-zinc-500 text-sm text-center">
               No signals yet today. Check back after the morning run.

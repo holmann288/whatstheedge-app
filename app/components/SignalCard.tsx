@@ -58,7 +58,7 @@ export default function SignalCard({ s }: { s: any }) {
       <div className="px-4 pt-4 pb-2 flex items-start justify-between gap-4">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-xs text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded">{s.sport}</span>
-          <span className="text-xs bg-green-400 text-black px-2 py-0.5 rounded font-bold">BET</span>
+          <span className="text-xs bg-green-400 text-black px-2 py-0.5 rounded font-bold">EDGE +{edge} pts</span>
           <span className="text-sm text-zinc-300">{away} @ {home}</span>
         </div>
 

@@ -27,8 +27,8 @@ export default async function StartPage() {
       ]
     },
     {
-      title: "What BET means",
-      content: "BET means our model disagrees with Vegas by 5.5 or more points on a spread or total. This is the threshold where the disagreement is meaningful, not noise. Smaller disagreements are visible on the Fair Value tab but not flagged as signals."
+      title: "What \"Edge\" means",
+      content: "Edge is how many points our model disagrees with Vegas. A 12-point edge means our model thinks the line is 12 points off. The bigger the edge, the stronger the disagreement — but bigger doesn't always mean better. We surface signals where the edge is 5.5 points or more. What you do with that information is entirely up to you."
     },
     {
       title: "What CLV means",
