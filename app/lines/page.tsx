@@ -174,9 +174,17 @@ export default function LinesPage() {
                     <div className="text-xs text-zinc-400 mt-1 max-w-sm">{plainEnglish(r)}</div>
                   )}
                 </div>
-                <div className="text-right space-y-1">
-                  <div className={`font-bold text-lg ${edgeColor(r)}`}>{diffLabel(r)}</div>
-                  <div className="text-zinc-500 text-xs">Vegas Line</div>
+                <div className="flex gap-6 text-right shrink-0">
+                  <div className="space-y-1">
+                    <div className="text-zinc-500 text-xs uppercase tracking-widest">Vegas Says</div>
+                    <div className="text-white font-bold text-lg">{r.bet_type === 'spread' ? (r.market_value > 0 ? '+' : '') + r.market_value : r.market_value}</div>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="text-zinc-500 text-xs uppercase tracking-widest">Our Model</div>
+                    <div className={`font-bold text-lg ${edgeColor(r)}`}>
+                      {r.bet_type === 'spread' ? (r.fair_value > 0 ? '+' : '') + r.fair_value : r.fair_value}
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
