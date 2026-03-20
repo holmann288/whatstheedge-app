@@ -6,6 +6,7 @@ const tabs = [
   { label: 'Model Tracker', href: '/outcomes' },
   { label: 'CLV', href: '/clv' },
   { label: 'Briefings', href: '/briefings' },
+  { label: 'Start Here', href: '/start' },
 ]
 
 export default function Nav({ active }: { active: string }) {
