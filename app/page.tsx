@@ -1,11 +1,11 @@
-import { supabase } from './lib/supabase'
 import { createClient } from './lib/supabase-server'
 import Link from 'next/link'
 
 export default async function Home() {
+  const supabase = await createClient()
   const today = new Date().toISOString().split('T')[0]
-  const serverSupabase = await createClient()
-  const { data: { user } } = await serverSupabase.auth.getUser()
+
+  const { data: { user } } = await supabase.auth.getUser()
 
   const [edgesRes, clvRes, briefingRes, clvBriefingRes] = await Promise.all([
     supabase.from('edges').select('*').gte('edge_pct', 5.5).eq('game_date', today).in('bet_type', ['spread', 'total']).order('edge_pct', { ascending: false }),
@@ -20,10 +20,10 @@ export default async function Home() {
   const clvBriefing = clvBriefingRes.data?.content || null
 
   const avgClv = clvData.length > 0
-    ? (clvData.reduce((sum, r) => sum + r.clv, 0) / clvData.length * 100).toFixed(2)
+    ? (clvData.reduce((sum: number, r: any) => sum + r.clv, 0) / clvData.length * 100).toFixed(2)
     : '0.00'
   const pctPos = clvData.length > 0
-    ? ((clvData.filter(r => r.clv > 0).length / clvData.length) * 100).toFixed(1)
+    ? ((clvData.filter((r: any) => r.clv > 0).length / clvData.length) * 100).toFixed(1)
     : '0.0'
 
   const formatEdge = (s: any) => `${Math.abs(s.fair_value - s.market_value).toFixed(1)} pts`
@@ -50,7 +50,7 @@ export default async function Home() {
             Live
           </span>
           {user ? (
-            <span className="text-zinc-500">{user.email}</span>
+            <span className="text-zinc-500 truncate max-w-32">{user.email}</span>
           ) : (
             <Link href="/login" className="bg-green-400 text-black px-3 py-1 rounded font-bold hover:bg-green-300 transition">
               Sign In
