@@ -60,9 +60,10 @@ export async function middleware(request: NextRequest) {
   }
 
   // Not subscribed → redirect to subscribe page
-  const subscribeUrl = new URL('https://whatstheedge.com/api/subscribe')
-  subscribeUrl.searchParams.set('email', email)
-  return NextResponse.redirect(subscribeUrl)
+  const url = request.nextUrl.clone()
+  url.pathname = '/api/subscribe'
+  url.searchParams.set('email', email)
+  return NextResponse.redirect(url)
 }
 
 export const config = {
