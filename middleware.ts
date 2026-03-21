@@ -1,6 +1,9 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+const ADMIN_EMAILS = ['holmann288@gmail.com']
+const PUBLIC_PATHS = ['/login', '/auth', '/api']
+
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
@@ -24,14 +27,42 @@ export async function middleware(request: NextRequest) {
   )
 
   const { data: { user } } = await supabase.auth.getUser()
+  const path = request.nextUrl.pathname
 
-  // Protect all routes except login and auth callback
-  if (!user && !request.nextUrl.pathname.startsWith('/login') && 
-      !request.nextUrl.pathname.startsWith('/auth')) {
-    // Don't redirect — let page handle teaser vs locked
+  // Allow public paths
+  if (PUBLIC_PATHS.some(p => path.startsWith(p))) {
+    return supabaseResponse
   }
 
-  return supabaseResponse
+  // Not logged in → redirect to login
+  if (!user) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/login'
+    return NextResponse.redirect(url)
+  }
+
+  // Admin bypass — skip subscriber check
+  const email = user.email?.toLowerCase() || ''
+  if (ADMIN_EMAILS.includes(email)) {
+    return supabaseResponse
+  }
+
+  // Check subscriber status
+  const { data: sub } = await supabase
+    .from('subscribers')
+    .select('status')
+    .eq('email', email)
+    .limit(1)
+    .single()
+
+  if (sub?.status === 'active') {
+    return supabaseResponse
+  }
+
+  // Not subscribed → redirect to subscribe page
+  const subscribeUrl = new URL('https://whatstheedge.com/api/subscribe')
+  subscribeUrl.searchParams.set('email', email)
+  return NextResponse.redirect(subscribeUrl)
 }
 
 export const config = {

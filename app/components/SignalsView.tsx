@@ -1,6 +1,5 @@
 'use client';
 import { useState } from 'react';
-import Link from 'next/link';
 import SportFilter, { filterRows, classifyGame, type FilterKey } from './SportFilter';
 import SignalCard from './SignalCard';
 
@@ -20,8 +19,6 @@ export default function SignalsView({ signals, user, clvStats }: SignalsViewProp
   const { avgClv, avgClvPositive, pctPos, n } = clvStats;
 
   const filtered = filterRows(signals, filter);
-  const visibleSignals = user ? filtered : filtered.slice(0, 1);
-  const lockedCount = filtered.length - visibleSignals.length;
 
   // Compute counts for badge display
   const counts: Record<FilterKey, number> = { ALL: 0, NBA: 0, NCAAT: 0, NIT: 0, MLB: 0 };
@@ -58,18 +55,9 @@ export default function SignalsView({ signals, user, clvStats }: SignalsViewProp
           </div>
         ) : (
           <div className="space-y-3">
-            {visibleSignals.map((s: any) => (
+            {filtered.map((s: any) => (
               <SignalCard key={s.id} s={s} />
             ))}
-            {!user && lockedCount > 0 && (
-              <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-8 text-center space-y-4">
-                <div className="text-zinc-400 text-sm">{lockedCount} more signal{lockedCount > 1 ? 's' : ''} today</div>
-                <div className="text-zinc-600 text-xs">Sign in to unlock all signals, CLV analysis, and morning briefings</div>
-                <Link href="/login" className="inline-block bg-green-400 text-black px-6 py-2 rounded font-bold text-sm hover:bg-green-300 transition">
-                  Sign In to Unlock
-                </Link>
-              </div>
-            )}
           </div>
         )}
       </div>

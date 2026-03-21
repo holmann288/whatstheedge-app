@@ -19,7 +19,7 @@ export default async function Home() {
   return (
     <div className="min-h-screen bg-zinc-950 text-white font-mono">
       <Header user={user} />
-      {user && <Nav active="/" />}
+      <Nav active="/" />
 
       <main className="max-w-4xl mx-auto px-6 py-10 space-y-10">
         <SignalsView signals={signals} user={user} clvStats={clvStats} />
