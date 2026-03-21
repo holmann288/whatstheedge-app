@@ -13,12 +13,13 @@ const FILTERS = [
 type FilterKey = typeof FILTERS[number]['key'];
 
 // Classify a game row into a filter key
+// Parses date string directly (no Date object) to avoid timezone issues
 export function classifyGame(sport: string, gameDate: string): FilterKey {
   if (sport !== 'NCAAB') return sport as FilterKey;
   try {
-    const d = new Date(gameDate + 'T00:00:00');
-    const month = d.getMonth() + 1; // 1-indexed
-    const day = d.getDate();
+    const parts = gameDate.slice(0, 10).split('-');
+    const month = parseInt(parts[1], 10);
+    const day = parseInt(parts[2], 10);
     if ((month === 3 && day >= 14) || (month === 4 && day <= 8)) return 'NCAAT';
     return 'NIT';
   } catch {
