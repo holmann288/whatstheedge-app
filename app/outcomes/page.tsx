@@ -65,8 +65,8 @@ export default async function OutcomesPage() {
       <Header user={user} />
       <Nav active="/outcomes" />
 
-      <main className="max-w-4xl mx-auto px-6 py-10 space-y-10">
-        <div className="grid grid-cols-5 gap-4">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-10">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
           {[
             { label: 'Total Resolved', value: resolved.length.toString() },
             { label: 'Overall Hit Rate', value: hitRate(resolved) ? `${hitRate(resolved)}%` : '—' },
@@ -84,7 +84,7 @@ export default async function OutcomesPage() {
         {/* Sport Breakdown */}
         <div>
           <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-4">Sport Breakdown</h2>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             {[
               { sport: 'NBA', rows: nbaRows, spreads: nbaSpreads },
               { sport: 'NCAAB', rows: ncaabRows, spreads: ncaabSpreads },
@@ -123,9 +123,9 @@ export default async function OutcomesPage() {
           ) : (
             <div className="space-y-2">
               {resolved.map((r: any) => (
-                <div key={r.id} className="bg-zinc-900 border border-zinc-800 rounded-lg px-5 py-4 flex items-center justify-between">
+                <div key={r.id} className="bg-zinc-900 border border-zinc-800 rounded-lg px-5 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
                   <div className="space-y-0.5">
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <span className="text-xs text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded">{r.sport}</span>
                       <span className="text-xs text-zinc-400">{r.game_date}</span>
                       <span className="text-sm text-zinc-300">{r.away_team} @ {r.home_team}</span>

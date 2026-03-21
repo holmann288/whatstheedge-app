@@ -30,7 +30,7 @@ export default function SignalsView({ signals, user, clvStats }: SignalsViewProp
 
   return (
     <>
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
           <div className="text-zinc-500 text-xs uppercase tracking-widest mb-1">NBA Avg CLV</div>
           <div className={`text-2xl font-bold ${avgClvPositive ? "text-green-400" : "text-red-400"}`}>{avgClvPositive ? "+" : "-"}{avgClv}%</div>

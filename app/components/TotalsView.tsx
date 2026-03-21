@@ -22,7 +22,7 @@ export default function TotalsView({ rows }: { rows: any[] }) {
     <>
       <SportFilter value={filter} onChange={setFilter} />
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         {[
           { label: 'Total Games', value: filtered.length.toString() },
           { label: 'Avg Edge', value: `${avgEdge} pts` },
@@ -49,7 +49,7 @@ export default function TotalsView({ rows }: { rows: any[] }) {
               const direction = edge > 0 ? 'OVER' : 'UNDER'
 
               return (
-                <div key={r.id} className="bg-zinc-900 border border-zinc-800 rounded-lg p-3 flex items-center justify-between">
+                <div key={r.id} className="bg-zinc-900 border border-zinc-800 rounded-lg p-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     <div className="space-y-0.5">
                       <div className="flex items-center gap-2">
@@ -64,17 +64,17 @@ export default function TotalsView({ rows }: { rows: any[] }) {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-4 text-right shrink-0">
+                  <div className="flex items-center gap-2 sm:gap-4 flex-wrap text-right shrink-0">
                     <div>
-                      <div className="text-zinc-500 text-[10px] uppercase tracking-widest">Fair</div>
+                      <div className="text-zinc-500 text-[11px] sm:text-[10px] uppercase tracking-widest">Fair</div>
                       <div className="text-sm font-bold text-white">{r.fair_value}</div>
                     </div>
                     <div>
-                      <div className="text-zinc-500 text-[10px] uppercase tracking-widest">Market</div>
+                      <div className="text-zinc-500 text-[11px] sm:text-[10px] uppercase tracking-widest">Market</div>
                       <div className="text-sm font-bold text-white">{r.market_value}</div>
                     </div>
                     <div>
-                      <div className="text-zinc-500 text-[10px] uppercase tracking-widest">Edge</div>
+                      <div className="text-zinc-500 text-[11px] sm:text-[10px] uppercase tracking-widest">Edge</div>
                       <div className={`text-sm font-bold ${edgeColor(absEdge)}`}>
                         {absEdge.toFixed(1)}
                       </div>

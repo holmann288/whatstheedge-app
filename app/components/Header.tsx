@@ -3,7 +3,7 @@ import { signOut } from '../actions/auth'
 
 export default function Header({ user }: { user: any }) {
   return (
-    <header className="border-b border-zinc-800 px-6 py-4 flex items-center justify-between">
+    <header className="border-b border-zinc-800 px-4 sm:px-6 py-4 flex items-center justify-between">
       <div>
         <Link href="/">
           <span className="text-green-400 font-bold text-xl tracking-tight">whats</span>
@@ -11,7 +11,7 @@ export default function Header({ user }: { user: any }) {
         </Link>
         <span className="ml-3 text-zinc-500 text-xs uppercase tracking-widest">Beta</span>
       </div>
-      <div className="flex items-center gap-4 text-xs">
+      <div className="flex items-center gap-2 sm:gap-4 text-xs">
         <span className="flex items-center gap-1 text-zinc-400">
           <span className="w-2 h-2 rounded-full bg-green-400 inline-block animate-pulse"></span>
           Live

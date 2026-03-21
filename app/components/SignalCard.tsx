@@ -66,7 +66,7 @@ export default function SignalCard({ s }: { s: any }) {
 
       {/* Three info rows */}
       <div className="px-4 pb-3 space-y-2">
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
           <div className="bg-zinc-800 rounded-lg p-2 space-y-0.5">
             <div className="text-zinc-500 text-xs uppercase tracking-widest">Vegas thinks</div>
             <div className="text-white text-xs font-medium leading-snug">{vegasSays()}</div>
@@ -95,7 +95,7 @@ export default function SignalCard({ s }: { s: any }) {
       {/* Expanded detail for sharp bettors */}
       {expanded && (
         <div className="border-t border-zinc-800 px-5 py-4 bg-zinc-950 space-y-3">
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4">
             <div>
               <div className="text-zinc-500 text-xs uppercase tracking-widest mb-1">Vegas Line</div>
               <div className="text-white font-bold text-lg">{mkt}</div>

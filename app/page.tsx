@@ -21,7 +21,7 @@ export default async function Home() {
       <Header user={user} />
       <Nav active="/" />
 
-      <main className="max-w-4xl mx-auto px-6 py-10 space-y-10">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-10">
         <SignalsView signals={signals} user={user} clvStats={clvStats} />
 
         <div className="border border-dashed border-zinc-800 rounded-lg p-6 text-center text-zinc-600 text-sm">

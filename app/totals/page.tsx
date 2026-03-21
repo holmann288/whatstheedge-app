@@ -22,7 +22,7 @@ export default async function TotalsPage() {
       <Header user={user} />
       <Nav active="/totals" />
 
-      <main className="max-w-4xl mx-auto px-6 py-10 space-y-10">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-10">
         <div>
           <h1 className="text-2xl font-bold mb-1">Over/Under Predictions</h1>
           <p className="text-zinc-500 text-sm">

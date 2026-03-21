@@ -99,8 +99,9 @@ export default async function V1V2Page() {
   const metricsTable = (label: string, v1: ReturnType<typeof computeMetrics>, v2: ReturnType<typeof computeMetrics>) => (
     <div>
       {label && <h3 className="text-xs uppercase tracking-widest text-zinc-500 mb-3">{label}</h3>}
+      <div className="overflow-x-auto">
       <div className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden">
-        <table className="w-full text-sm">
+        <table className="w-full text-sm min-w-[500px]">
           <thead>
             <tr className="border-b border-zinc-800">
               <th className="text-left px-5 py-3 text-zinc-500 text-xs uppercase tracking-widest">Metric</th>
@@ -132,6 +133,7 @@ export default async function V1V2Page() {
           </tbody>
         </table>
       </div>
+      </div>
     </div>
   )
 
@@ -140,7 +142,7 @@ export default async function V1V2Page() {
       <Header user={user} />
       <Nav active="/v1v2" />
 
-      <main className="max-w-4xl mx-auto px-6 py-10 space-y-10">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-10">
         {/* Header */}
         <div>
           <h1 className="text-2xl font-bold">V1 vs V2 Model Comparison</h1>
@@ -148,7 +150,7 @@ export default async function V1V2Page() {
         </div>
 
         {/* Sample size cards */}
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
           {[
             { label: 'V1 Total', value: v1All.length },
             { label: 'V1 Resolved', value: v1Resolved.length },

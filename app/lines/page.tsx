@@ -104,7 +104,7 @@ export default function LinesPage() {
       <Header user={user} />
       <Nav active="/lines" />
 
-      <main className="max-w-4xl mx-auto px-6 py-10 space-y-6">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-6">
 
         {/* Sport filter */}
         <SportFilter value={sport} onChange={(f) => { setSport(f); if ((f === 'NCAAT' || f === 'NIT') && betType === 'Moneyline') setBetType('Spreads') }} />
@@ -123,7 +123,7 @@ export default function LinesPage() {
         </div>
 
         {/* Stats row */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
             <div className="text-zinc-500 text-xs uppercase tracking-widest mb-1">Showing</div>
             <div className="text-2xl font-bold text-green-400">{filtered.length}</div>

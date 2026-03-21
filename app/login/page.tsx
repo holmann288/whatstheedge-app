@@ -33,11 +33,11 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white font-mono flex items-center justify-center px-6">
-      <div className="w-full max-w-sm space-y-8">
+    <div className="min-h-screen bg-zinc-950 text-white font-mono flex items-center justify-center px-4 sm:px-6">
+      <div className="w-full max-w-sm space-y-6 sm:space-y-8">
         <div>
-          <span className="text-green-400 font-bold text-2xl tracking-tight">whats</span>
-          <span className="text-white font-bold text-2xl tracking-tight">theedge</span>
+          <span className="text-green-400 font-bold text-xl sm:text-2xl tracking-tight">whats</span>
+          <span className="text-white font-bold text-xl sm:text-2xl tracking-tight">theedge</span>
         </div>
 
         <p className="text-zinc-400 text-sm">Sign in to access signals, model predictions, and CLV analysis.</p>
