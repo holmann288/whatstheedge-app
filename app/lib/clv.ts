@@ -11,6 +11,7 @@ export async function getDeduplicatedCLV() {
     .select('clv, sport, game, team, market_name, side, timestamp')
     .not('clv', 'is', null)
     .gte('timestamp', '2026-03-17')
+    .eq('sport', 'NBA')
     .order('timestamp', { ascending: true })
 
   if (!data || data.length === 0) return { avgClv: '0.00', pctPos: '0.0', n: 0 }
