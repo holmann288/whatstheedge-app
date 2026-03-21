@@ -11,7 +11,7 @@ export default async function Home() {
   const { data: { user } } = await supabase.auth.getUser()
 
   const [edgesRes, clvStats] = await Promise.all([
-    supabase.from('edges').select('*').gte('edge_pct', 5.5).eq('game_date', today).in('bet_type', ['spread', 'total']).order('edge_pct', { ascending: false }),
+    supabase.from('edges').select('*').gte('edge_pct', 5.5).eq('game_date', today).in('bet_type', ['spread', 'total']).neq('sport', 'NCAAB').order('edge_pct', { ascending: false }),
     getDeduplicatedCLV(),
   ])
 
@@ -34,7 +34,7 @@ export default async function Home() {
             <div className="text-zinc-600 text-xs mt-1">{n} unique bets</div>
           </div>
           <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
-            <div className="text-zinc-500 text-xs uppercase tracking-widest mb-1">CLV Positive</div>
+            <div className="text-zinc-500 text-xs uppercase tracking-widest mb-1">NBA CLV Positive</div>
             <div className="text-2xl font-bold text-green-400">{pctPos}%</div>
           </div>
           <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
