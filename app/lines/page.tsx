@@ -4,6 +4,7 @@ import { createBrowserClient } from '@supabase/ssr'
 import Header from '../components/Header'
 import SignalCard from '../components/SignalCard'
 import Nav from '../components/Nav'
+import SportFilter, { filterRows, type FilterKey } from '../components/SportFilter'
 import { useRouter } from 'next/navigation'
 
 const supabase = createBrowserClient(
@@ -11,16 +12,15 @@ const supabase = createBrowserClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
-const SPORTS = ['All', 'NBA', 'NCAAB', 'MLB']
 const BET_TYPES_ALL = ['Spreads', 'O/U', 'Moneyline']
 
 export default function LinesPage() {
   const [rows, setRows] = useState<any[]>([])
-  const [sport, setSport] = useState('All')
+  const [sport, setSport] = useState<FilterKey>('ALL')
   const [betType, setBetType] = useState('Spreads')
   const [user, setUser] = useState<any>(null)
   const [authChecked, setAuthChecked] = useState(false)
-  const BET_TYPES = sport === 'NCAAB' ? ['Spreads', 'O/U'] : BET_TYPES_ALL
+  const BET_TYPES = (sport === 'NCAAT' || sport === 'NIT') ? ['Spreads', 'O/U'] : BET_TYPES_ALL
   const router = useRouter()
 
   useEffect(() => {
@@ -40,8 +40,7 @@ export default function LinesPage() {
 
   const typeMap: Record<string, string> = { 'Spreads': 'spread', 'O/U': 'total', 'Moneyline': 'moneyline' }
 
-  const filtered = rows
-    .filter(r => sport === 'All' || r.sport === sport)
+  const filtered = filterRows(rows, sport)
     .filter(r => r.bet_type === typeMap[betType])
 
   const diff = (r: any) => {
@@ -108,15 +107,7 @@ export default function LinesPage() {
       <main className="max-w-4xl mx-auto px-6 py-10 space-y-6">
 
         {/* Sport filter */}
-        <div className="flex gap-2 flex-wrap">
-          {SPORTS.map(s => (
-            <button key={s} onClick={() => { setSport(s); if (s === 'NCAAB' && betType === 'Moneyline') setBetType('Spreads') }}
-              className={`px-4 py-1.5 rounded text-xs font-bold uppercase tracking-widest transition
-                ${sport === s ? 'bg-green-400 text-black' : 'bg-zinc-800 text-zinc-400 hover:text-white'}`}>
-              {s}
-            </button>
-          ))}
-        </div>
+        <SportFilter value={sport} onChange={(f) => { setSport(f); if ((f === 'NCAAT' || f === 'NIT') && betType === 'Moneyline') setBetType('Spreads') }} />
 
         {/* Bet type sub-tabs */}
         <div className="flex border-b border-zinc-800">
