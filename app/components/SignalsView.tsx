@@ -26,7 +26,7 @@ export default function SignalsView({ signals, user, clvStats }: SignalsViewProp
   // Compute counts for badge display
   const counts: Record<FilterKey, number> = { ALL: 0, NBA: 0, NCAAT: 0, NIT: 0, MLB: 0 };
   for (const s of signals) {
-    const key = classifyGame(s.sport, s.game_date);
+    const key = classifyGame(s.sport, s.game_date, s.home_team, s.away_team);
     counts[key]++;
     counts['ALL']++;
   }
